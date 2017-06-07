@@ -51,6 +51,15 @@ var budgetController = (function(){
       return newItem;
     },
 
+    deleteItem: function({ type,  id }) {
+      // var newList;
+
+      data.allItems[type] = data.allItems[type].filter(item => {
+        return item.id !== id;
+      });
+      // data.allItems[type] = newList;
+    },
+
     calculateBudget: function() {
       // calculate total income and expenses
       calculateTotal('exp');
@@ -94,7 +103,8 @@ var UIController = (function() {
     budgetLabel: '.budget__value',
     incomeLabel: '.budget__income--value',
     expensesLabel: '.budget__expenses--value',
-    percentLabel: '.budget__expenses--percentage'
+    percentLabel: '.budget__expenses--percentage',
+    container: '.container'
   }
 
   return {
@@ -111,7 +121,7 @@ var UIController = (function() {
       // Create HTMl
       if (type === "inc") {
         element = DOMstrings.incomeContainer;
-        html = `<div class="item clearfix" id="income-${obj.id}">
+        html = `<div class="item clearfix" id="inc-${obj.id}">
           <div class="item__description">${obj.description}</div>
           <div class="right clearfix">
             <div class="item__value">+ ${obj.value}</div><div class="item__delete">
@@ -123,7 +133,7 @@ var UIController = (function() {
         </div>`
       } else if (type === "exp") {
         element = DOMstrings.expensesContainer;
-        html = `<div class="item clearfix" id="expense-${obj.id}">
+        html = `<div class="item clearfix" id="exp-${obj.id}">
           <div class="item__description">${obj.description}</div>
           <div class="right clearfix">
             <div class="item__value">- ${obj.value}</div>
@@ -156,7 +166,7 @@ var UIController = (function() {
 
       document.querySelector(budgetLabel).innerText = `$${budget}`;
       document.querySelector(incomeLabel).innerText = `+ ${totalInc}`;
-      document.querySelector(expensesLabel).innerText = `- ${totalInc}`;
+      document.querySelector(expensesLabel).innerText = `- ${totalExp}`;
 
       if (percentage > 0) {
         document.querySelector(percentLabel).innerText = `${percentage}%`;
@@ -176,14 +186,18 @@ var UIController = (function() {
 var Controller = (function(budgetCtrl, UICtrl) {
 
   var setupEventListeners = function() {
-    var DOMstrings = UICtrl.getDOMstrings();
+    var DOM = UICtrl.getDOMstrings();
 
-    document.querySelector(DOMstrings.inputBtn).addEventListener('click', ctrlAddItem);
+    document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+
     document.addEventListener('keypress', function(event) {
       if (event.keyCode === 13 || event.which === 13) {
         ctrlAddItem();
       }
     });
+
+    // event delegation
+    document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
   }
 
   var updateBudget = function() {
@@ -191,7 +205,6 @@ var Controller = (function(budgetCtrl, UICtrl) {
     budgetCtrl.calculateBudget();
     let budget = budgetCtrl.getBudget();
     // display budget on UI
-    console.log(budget);
     UICtrl.displayBudget(budget);
   }
 
@@ -206,6 +219,21 @@ var Controller = (function(budgetCtrl, UICtrl) {
       UICtrl.addListItem(newItem, input.type);
       UICtrl.clearFields();
 
+      updateBudget();
+    }
+  }
+
+  var ctrlDeleteItem = function(event) {
+    let itemID, splitID, type, id;
+
+    itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+    if (itemID) {
+      splitID = itemID.split('-');
+      type = splitID[0];
+      id = parseInt(splitID[1]);
+
+      budgetCtrl.deleteItem({ type, id });
       updateBudget();
     }
   }
