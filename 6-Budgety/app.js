@@ -47,8 +47,6 @@ var budgetController = (function(){
         newItem = new Income(id, description, value);
       }
 
-      // TODO Why doesnt concat method work?
-      // data.allItems[type].concat([newItem]);
       data.allItems[type].push(newItem);
       return newItem;
     },
@@ -60,7 +58,12 @@ var budgetController = (function(){
       // calculate budget
       data.budget = data.totals.inc - data.totals.exp;
       // calculate percentage of expenses
-      data.percentage = Math.floor((data.totals.exp / data.totals.inc) * 100);
+      if (data.totals.inc > 0) {
+        data.percentage = Math.floor((data.totals.exp / data.totals.inc) * 100);
+      } else {
+        data.percentage = -1;
+      }
+
     },
 
     getBudget: function() {
@@ -87,7 +90,11 @@ var UIController = (function() {
     inputValue: '.add__value',
     inputBtn: '.add__btn',
     incomeContainer: '.income__list',
-    expensesContainer: '.expenses__list'
+    expensesContainer: '.expenses__list',
+    budgetLabel: '.budget__value',
+    incomeLabel: '.budget__income--value',
+    expensesLabel: '.budget__expenses--value',
+    percentLabel: '.budget__expenses--percentage'
   }
 
   return {
@@ -130,7 +137,6 @@ var UIController = (function() {
         </div>`
       }
 
-      // Insert into DOM
       document.querySelector(element).insertAdjacentHTML('beforeend', html);
     },
 
@@ -142,6 +148,21 @@ var UIController = (function() {
 
       fields.forEach(field => { field.value = "" });
       fields[0].focus();
+    },
+
+    displayBudget: function(obj) {
+      const { budgetLabel, incomeLabel, expensesLabel, percentLabel } = DOMstrings;
+      const { budget, totalInc, totalExp, percentage} = obj;
+
+      document.querySelector(budgetLabel).innerText = `$${budget}`;
+      document.querySelector(incomeLabel).innerText = `+ ${totalInc}`;
+      document.querySelector(expensesLabel).innerText = `- ${totalInc}`;
+
+      if (percentage > 0) {
+        document.querySelector(percentLabel).innerText = `${percentage}%`;
+      } else {
+        document.querySelector(percentLabel).innerText = `---`;
+      }
     },
 
     getDOMstrings: function() {
@@ -171,6 +192,7 @@ var Controller = (function(budgetCtrl, UICtrl) {
     let budget = budgetCtrl.getBudget();
     // display budget on UI
     console.log(budget);
+    UICtrl.displayBudget(budget);
   }
 
   var ctrlAddItem = function() {
@@ -190,6 +212,12 @@ var Controller = (function(budgetCtrl, UICtrl) {
 
   return {
     init: function() {
+      UICtrl.displayBudget({
+        budget: 0,
+        totalInc: 0,
+        totalExp: 0,
+        percentage: 0
+      });
       setupEventListeners();
     }
   };
