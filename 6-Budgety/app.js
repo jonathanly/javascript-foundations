@@ -52,12 +52,9 @@ var budgetController = (function(){
     },
 
     deleteItem: function({ type,  id }) {
-      // var newList;
-
       data.allItems[type] = data.allItems[type].filter(item => {
         return item.id !== id;
       });
-      // data.allItems[type] = newList;
     },
 
     calculateBudget: function() {
