@@ -22,8 +22,6 @@
       console.log('You are correct!');
       scoreTracker(true);
       nextQuestion();
-    } else if (answer === 'exit') {
-      // stop game
     } else {
       console.log('Better luck next time :(');
       scoreTracker(false);
@@ -56,7 +54,10 @@
 
     allQuestions[questionSelect].displayQuestion();
     var userInput = prompt('Write your response');
-    allQuestions[questionSelect].checkAnswer(userInput);
+
+    if (userInput !== 'exit') {
+      allQuestions[questionSelect].checkAnswer(userInput);
+    }
   }
 
   function score() {
@@ -65,13 +66,11 @@
       if (correct) {
         currentScore++;
         console.log(`Your current score is ${currentScore}`);
-        console.log('-------------------------')
-        return currentScore;
       } else {
         console.log(`Your current score is ${currentScore}`);
-        console.log('-------------------------')
-        return currentScore;
       }
+      console.log('-------------------------')
+      return currentScore;
     }
   }
 
