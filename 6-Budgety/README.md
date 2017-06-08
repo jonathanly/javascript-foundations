@@ -15,7 +15,7 @@ var budgetController = (function() {
 })();
 ```
 
-#### Spread Operator
+### Spread Operator
 ```js
 // ES5 way to convert NodeList to Array
 fields = document.querySelectorAll(`${inputDescription}, ${inputValue}`);
@@ -57,6 +57,9 @@ var ctrlDeleteItem = function(event) {
 Arrays can be sorted lexically using `Array.prototype.sort()`. The default sort order is according to string unicode code points.
 
 `sort(comparefunction)` takes a function argument that defines the sort order.
+
+[Further reading](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/sort?v=example)
+
 ```js
 var fruit = ['cherries', 'apples', 'bananas'];
 
